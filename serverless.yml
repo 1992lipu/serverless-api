@@ -1,0 +1,176 @@
+service: kontrakt-api
+
+provider:
+  name: aws
+  #endpointType: REGIONAL
+  runtime: nodejs8.10
+  region: ${env:AWS_REGION}
+  stage: ${env:KONTRAKT_ENV}
+  tracing: true
+  deploymentBucket: com.kontract.${self:custom.region}.${self:custom.stage}.deploys
+  environment:
+    KONTRAKT_ENV: ${env:KONTRAKT_ENV}
+
+  iamRoleStatements:
+
+    # allow the lambda to write logs
+    - Effect: "Allow"
+      Action:
+        - "logs:CreateLogGroup"
+        - "logs:CreateLogStream"
+        - "logs:PutLogEvents"
+      Resource:
+        - "Fn::Join": ["", ["arn:aws:logs:", {"Ref": "AWS::Region"}, ":*:*"]]
+    # allow xray permissions
+    - Effect: "Allow"
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource:
+        - "*"
+
+plugins:
+  - serverless-plugin-tracing
+  - serverless-offline
+
+resources:
+  Resources:
+    # Domain:
+    #   Type: AWS::ApiGateway::DomainName
+    #   Properties:
+    #     DomainName: ${env:KONTRACT_API_DOMAIN}
+    #     EndpointConfiguration:
+    #       Types: [ "REGIONAL" ]
+    #     RegionalCertificateArn:  ${env:CERT_ARN}
+    pathmapping:
+      Type: AWS::ApiGateway::BasePathMapping
+      Properties:
+        BasePath: api
+        DomainName: ${env:KONTRACT_API_DOMAIN}
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        Stage: ${self:custom.stage}
+  Conditions:
+    IsOther:
+      Fn::Not:
+        - Fn::Equals:
+          - ${self:custom.stage}
+          - test 
+    IsTest:
+      Fn::Equals:
+        - ${self:custom.stage}
+        - test 
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, self:provider.region}
+  serverless-offline:
+    port: 4000
+    host: '0.0.0.0'
+
+functions:
+  signup:
+    handler: handlers/signupUserHandler.signupUser
+    events:
+      - http:
+          path: /signup
+          method: post
+  confirmSignup:
+    handler: handlers/confirmSignupHandler.confirmSignup
+    events:
+      - http:
+          path: /confirmSignup
+          method: post
+  login:
+    handler: handlers/loginHandler.loginUser
+    events:
+      - http:
+          path: /login
+          method: post
+  resetPwd:
+    handler: handlers/resetPasswordHandler.resetPassword
+    events:
+      - http:
+          path: /resetPwd
+          method: post
+  editUser:
+    handler: handlers/editUserProfileHandler.editUserProfile
+    events:
+      - http:
+          path: /editUser
+          method: post
+  getProfile:
+    handler: handlers/getUserProfileHandler.getUserProfile
+    events:
+      - http:
+          path: /getProfile/{email}
+          method: get
+          request:
+            parameters:
+              paths:
+                email: true
+  getActivity:
+    handler: handlers/getUserActivityHandler.getUserActivity
+    events:
+      - http:
+          path: /getActivity/{email}
+          method: get
+          request:
+            parameters:
+              paths:
+                email: true
+  getHistory:
+    handler: handlers/getTxHistoryHandler.getTxHistory
+    events:
+      - http:
+          path: /getHistory/{email}
+          method: get
+          request:
+            parameters:
+              paths:
+                email: true
+  getContracts:
+    handler: handlers/getContractsHandler.getContracts
+    events:
+      - http:
+          path: /getContracts/{email}
+          method: get
+          request:
+            parameters:
+              paths:
+                email: true
+  uploadContract:
+    handler: handlers/uploadContractHandler.uploadContract
+    events:
+      - http:
+          path: /uploadContract
+          method: post
+  editContract:
+    handler: handlers/editContractHandler.editContract
+    events:
+      - http:
+          path: /editContract
+          method: post
+  deleteContract:
+    handler: handlers/deleteContractHandler.deleteContract
+    events:
+      - http:
+          path: /deleteContract
+          method: post
+  logout:
+    handler: handlers/logoutUserHandler.logoutUser
+    events:
+      - http:
+          path: /logout
+          method: post
+  healthcheck: 
+    handler: handlers/healthCheckHandler.statusCheck 
+    events: 
+      - http: 
+          path: status/ping 
+          method: get 
+  dbHealth: 
+    handler: handlers/healthCheckHandler.dbHealth 
+    events: 
+      - http: 
+          path: status/database 
+          method: get 

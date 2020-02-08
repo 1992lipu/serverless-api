@@ -1,0 +1,2885 @@
+{
+  "service": {
+    "service": "kontrakt-api",
+    "serviceObject": {
+      "name": "kontrakt-api"
+    },
+    "provider": {
+      "stage": "dev",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*]+?)}",
+      "name": "aws",
+      "runtime": "nodejs8.10",
+      "region": "us-east-1",
+      "tracing": true,
+      "deploymentBucket": "com.kontract.us-east-1.dev.deploys",
+      "environment": {
+        "KONTRAKT_ENV": "dev"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ],
+          "Resource": [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:logs:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":*:*"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "xray:PutTraceSegments",
+            "xray:PutTelemetryRecords"
+          ],
+          "Resource": [
+            "*"
+          ]
+        }
+      ],
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "SignupLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-signup"
+            }
+          },
+          "ConfirmSignupLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-confirmSignup"
+            }
+          },
+          "LoginLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-login"
+            }
+          },
+          "ResetPwdLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-resetPwd"
+            }
+          },
+          "EditUserLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-editUser"
+            }
+          },
+          "GetProfileLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-getProfile"
+            }
+          },
+          "GetActivityLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-getActivity"
+            }
+          },
+          "GetHistoryLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-getHistory"
+            }
+          },
+          "GetContractsLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-getContracts"
+            }
+          },
+          "UploadContractLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-uploadContract"
+            }
+          },
+          "EditContractLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-editContract"
+            }
+          },
+          "DeleteContractLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-deleteContract"
+            }
+          },
+          "LogoutLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-logout"
+            }
+          },
+          "HealthcheckLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-healthcheck"
+            }
+          },
+          "DbHealthLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/kontrakt-api-dev-dbHealth"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "dev",
+                        "kontrakt-api",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/kontrakt-api-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/kontrakt-api-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][1]"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "kontrakt-api",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "SignupLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-signup",
+              "Handler": "handlers/signupUserHandler.signupUser",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "SignupLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "SignupLambdaVersionAQGjNK2A9HYsvQXSxwgEx2sef4xBiIviBkzlpr5pg": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "SignupLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "ConfirmSignupLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-confirmSignup",
+              "Handler": "handlers/confirmSignupHandler.confirmSignup",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "ConfirmSignupLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "ConfirmSignupLambdaVersionovZXpkHm4UMgh8LkqKTZeICR6aY73E7pQ1qJ20wHBw": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ConfirmSignupLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "LoginLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-login",
+              "Handler": "handlers/loginHandler.loginUser",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "LoginLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "LoginLambdaVersionWDRQzrENkZOcCBNX5pn3QZ891tdM2bxblw32ZXTJu3E": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "LoginLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "ResetPwdLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-resetPwd",
+              "Handler": "handlers/resetPasswordHandler.resetPassword",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "ResetPwdLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "ResetPwdLambdaVersionCRtALKQal7EQBlbtN4la65ABq65WM6Mz11swHsww": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ResetPwdLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "EditUserLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-editUser",
+              "Handler": "handlers/editUserProfileHandler.editUserProfile",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "EditUserLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "EditUserLambdaVersionbCvXkKzedcwCvitRzJzcb3Qg9uV2fOXtBYjbWMo6RQQ": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "EditUserLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "GetProfileLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-getProfile",
+              "Handler": "handlers/getUserProfileHandler.getUserProfile",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "GetProfileLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "GetProfileLambdaVersionUWE45VfTBaPx1d857omEFX19b2xRaY6IR1WJehvcpEY": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetProfileLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "GetActivityLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-getActivity",
+              "Handler": "handlers/getUserActivityHandler.getUserActivity",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "GetActivityLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "GetActivityLambdaVersionj0U9JnQn5bqgsWzq7wOzlxctDgCRtXCaBoEWuIrxArg": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetActivityLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "GetHistoryLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-getHistory",
+              "Handler": "handlers/getTxHistoryHandler.getTxHistory",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "GetHistoryLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "GetHistoryLambdaVersionJefLOor4qFxBfXWCdaPzM7jvSzCbj8WFmofoANRHGs": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetHistoryLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "GetContractsLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-getContracts",
+              "Handler": "handlers/getContractsHandler.getContracts",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "GetContractsLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "GetContractsLambdaVersionYARHl9ath9koCGSOTloi3WHOokZcvkxn463tZdynw": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetContractsLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "UploadContractLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-uploadContract",
+              "Handler": "handlers/uploadContractHandler.uploadContract",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "UploadContractLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "UploadContractLambdaVersionfUpiFAoECGORxRbk385wEZrzlPz3oxyHbw7ij5k8A": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UploadContractLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "EditContractLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-editContract",
+              "Handler": "handlers/editContractHandler.editContract",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "EditContractLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "EditContractLambdaVersionCRgmCbQgKbo0Bc08dJaJatwqrXGAE0oD8mg8qpj2PE": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "EditContractLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "DeleteContractLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-deleteContract",
+              "Handler": "handlers/deleteContractHandler.deleteContract",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "DeleteContractLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "DeleteContractLambdaVersionvMBxLgo5tAsSiQJPyu5tSXCIZxbo1VBQDy4aw05Dek": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DeleteContractLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "LogoutLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-logout",
+              "Handler": "handlers/logoutUserHandler.logoutUser",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "LogoutLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "LogoutLambdaVersionWlEU5FClopz568hWz3FWKlKyV70AwsNHIWLjwXQnI": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "LogoutLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "HealthcheckLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-healthcheck",
+              "Handler": "handlers/healthCheckHandler.statusCheck",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "HealthcheckLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "HealthcheckLambdaVersionaqdox8oXbnbmSYRj0HCZnhhxtdG5FluznWtBoMHCo": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "HealthcheckLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "DbHealthLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "com.kontract.us-east-1.dev.deploys",
+                "S3Key": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z/kontrakt-api.zip"
+              },
+              "FunctionName": "kontrakt-api-dev-dbHealth",
+              "Handler": "handlers/healthCheckHandler.dbHealth",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "KONTRAKT_ENV": "dev"
+                }
+              },
+              "TracingConfig": {
+                "Mode": "Active"
+              }
+            },
+            "DependsOn": [
+              "DbHealthLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "DbHealthLambdaVersionu8sDwrrGLYfMiueqU05Xklwlloz0ehwxpOc9GMFYtQ": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DbHealthLambdaFunction"
+              },
+              "CodeSha256": "9sdUh+jcaFwbOtcfI4qXJ2Bzz0Jf8Xju9MlACLg1RfQ="
+            }
+          },
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "dev-kontrakt-api",
+              "EndpointConfiguration": {
+                "Types": [
+                  "EDGE"
+                ]
+              }
+            }
+          },
+          "ApiGatewayResourceSignup": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "signup",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceConfirmsignup": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "confirmSignup",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceLogin": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "login",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceResetpwd": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "resetPwd",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceEdituser": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "editUser",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetprofile": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "getProfile",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetprofileEmailVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceGetprofile"
+              },
+              "PathPart": "{email}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetactivity": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "getActivity",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetactivityEmailVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceGetactivity"
+              },
+              "PathPart": "{email}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGethistory": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "getHistory",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGethistoryEmailVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceGethistory"
+              },
+              "PathPart": "{email}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetcontracts": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "getContracts",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceGetcontractsEmailVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceGetcontracts"
+              },
+              "PathPart": "{email}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceUploadcontract": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "uploadContract",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceEditcontract": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "editContract",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceDeletecontract": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "deleteContract",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceLogout": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "logout",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceStatus": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "status",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceStatusPing": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceStatus"
+              },
+              "PathPart": "ping",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceStatusDatabase": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceStatus"
+              },
+              "PathPart": "database",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodSignupPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceSignup"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "SignupLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodConfirmsignupPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceConfirmsignup"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "ConfirmSignupLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodLoginPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceLogin"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "LoginLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodResetpwdPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceResetpwd"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "ResetPwdLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodEdituserPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceEdituser"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "EditUserLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodGetprofileEmailVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {
+                "method.request.path.email": true
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetprofileEmailVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetProfileLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodGetactivityEmailVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {
+                "method.request.path.email": true
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetactivityEmailVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetActivityLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodGethistoryEmailVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {
+                "method.request.path.email": true
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGethistoryEmailVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetHistoryLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodGetcontractsEmailVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {
+                "method.request.path.email": true
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceGetcontractsEmailVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetContractsLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodUploadcontractPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceUploadcontract"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "UploadContractLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodEditcontractPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceEditcontract"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "EditContractLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodDeletecontractPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceDeletecontract"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "DeleteContractLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodLogoutPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceLogout"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "LogoutLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodStatusPingGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceStatusPing"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "HealthcheckLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodStatusDatabaseGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceStatusDatabase"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "DbHealthLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayDeployment1568219866695": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodSignupPost",
+              "ApiGatewayMethodConfirmsignupPost",
+              "ApiGatewayMethodLoginPost",
+              "ApiGatewayMethodResetpwdPost",
+              "ApiGatewayMethodEdituserPost",
+              "ApiGatewayMethodGetprofileEmailVarGet",
+              "ApiGatewayMethodGetactivityEmailVarGet",
+              "ApiGatewayMethodGethistoryEmailVarGet",
+              "ApiGatewayMethodGetcontractsEmailVarGet",
+              "ApiGatewayMethodUploadcontractPost",
+              "ApiGatewayMethodEditcontractPost",
+              "ApiGatewayMethodDeletecontractPost",
+              "ApiGatewayMethodLogoutPost",
+              "ApiGatewayMethodStatusPingGet",
+              "ApiGatewayMethodStatusDatabaseGet"
+            ]
+          },
+          "SignupLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "SignupLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "ConfirmSignupLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "ConfirmSignupLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "LoginLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "LoginLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "ResetPwdLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "ResetPwdLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "EditUserLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "EditUserLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetProfileLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetProfileLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetActivityLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetActivityLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetHistoryLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetHistoryLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetContractsLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetContractsLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "UploadContractLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "UploadContractLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "EditContractLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "EditContractLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "DeleteContractLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "DeleteContractLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "LogoutLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "LogoutLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HealthcheckLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "HealthcheckLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "DbHealthLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "DbHealthLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "pathmapping": {
+            "Type": "AWS::ApiGateway::BasePathMapping",
+            "Properties": {
+              "BasePath": "api",
+              "DomainName": "api.kontrakt.co",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "Stage": "dev"
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "com.kontract.us-east-1.dev.deploys"
+          },
+          "SignupLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "SignupLambdaVersionAQGjNK2A9HYsvQXSxwgEx2sef4xBiIviBkzlpr5pg"
+            }
+          },
+          "ConfirmSignupLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ConfirmSignupLambdaVersionovZXpkHm4UMgh8LkqKTZeICR6aY73E7pQ1qJ20wHBw"
+            }
+          },
+          "LoginLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "LoginLambdaVersionWDRQzrENkZOcCBNX5pn3QZ891tdM2bxblw32ZXTJu3E"
+            }
+          },
+          "ResetPwdLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ResetPwdLambdaVersionCRtALKQal7EQBlbtN4la65ABq65WM6Mz11swHsww"
+            }
+          },
+          "EditUserLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "EditUserLambdaVersionbCvXkKzedcwCvitRzJzcb3Qg9uV2fOXtBYjbWMo6RQQ"
+            }
+          },
+          "GetProfileLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetProfileLambdaVersionUWE45VfTBaPx1d857omEFX19b2xRaY6IR1WJehvcpEY"
+            }
+          },
+          "GetActivityLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetActivityLambdaVersionj0U9JnQn5bqgsWzq7wOzlxctDgCRtXCaBoEWuIrxArg"
+            }
+          },
+          "GetHistoryLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetHistoryLambdaVersionJefLOor4qFxBfXWCdaPzM7jvSzCbj8WFmofoANRHGs"
+            }
+          },
+          "GetContractsLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetContractsLambdaVersionYARHl9ath9koCGSOTloi3WHOokZcvkxn463tZdynw"
+            }
+          },
+          "UploadContractLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UploadContractLambdaVersionfUpiFAoECGORxRbk385wEZrzlPz3oxyHbw7ij5k8A"
+            }
+          },
+          "EditContractLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "EditContractLambdaVersionCRgmCbQgKbo0Bc08dJaJatwqrXGAE0oD8mg8qpj2PE"
+            }
+          },
+          "DeleteContractLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "DeleteContractLambdaVersionvMBxLgo5tAsSiQJPyu5tSXCIZxbo1VBQDy4aw05Dek"
+            }
+          },
+          "LogoutLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "LogoutLambdaVersionWlEU5FClopz568hWz3FWKlKyV70AwsNHIWLjwXQnI"
+            }
+          },
+          "HealthcheckLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "HealthcheckLambdaVersionaqdox8oXbnbmSYRj0HCZnhhxtdG5FluznWtBoMHCo"
+            }
+          },
+          "DbHealthLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "DbHealthLambdaVersionu8sDwrrGLYfMiueqU05Xklwlloz0ehwxpOc9GMFYtQ"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "ApiGatewayRestApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
+            }
+          }
+        },
+        "Conditions": {
+          "IsOther": {
+            "Fn::Not": [
+              {
+                "Fn::Equals": [
+                  "dev",
+                  "test"
+                ]
+              }
+            ]
+          },
+          "IsTest": {
+            "Fn::Equals": [
+              "dev",
+              "test"
+            ]
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "custom": {
+      "stage": "dev",
+      "region": "us-east-1",
+      "serverless-offline": {
+        "port": 4000,
+        "host": "0.0.0.0"
+      }
+    },
+    "plugins": [
+      "serverless-plugin-tracing",
+      "serverless-offline"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "signup": {
+        "handler": "handlers/signupUserHandler.signupUser",
+        "events": [
+          {
+            "http": {
+              "path": "signup",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-signup",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "confirmSignup": {
+        "handler": "handlers/confirmSignupHandler.confirmSignup",
+        "events": [
+          {
+            "http": {
+              "path": "confirmSignup",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-confirmSignup",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "login": {
+        "handler": "handlers/loginHandler.loginUser",
+        "events": [
+          {
+            "http": {
+              "path": "login",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-login",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "resetPwd": {
+        "handler": "handlers/resetPasswordHandler.resetPassword",
+        "events": [
+          {
+            "http": {
+              "path": "resetPwd",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-resetPwd",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "editUser": {
+        "handler": "handlers/editUserProfileHandler.editUserProfile",
+        "events": [
+          {
+            "http": {
+              "path": "editUser",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-editUser",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "getProfile": {
+        "handler": "handlers/getUserProfileHandler.getUserProfile",
+        "events": [
+          {
+            "http": {
+              "path": "getProfile/{email}",
+              "method": "get",
+              "request": {
+                "parameters": {
+                  "method.request.path.email": true
+                }
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-getProfile",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "getActivity": {
+        "handler": "handlers/getUserActivityHandler.getUserActivity",
+        "events": [
+          {
+            "http": {
+              "path": "getActivity/{email}",
+              "method": "get",
+              "request": {
+                "parameters": {
+                  "method.request.path.email": true
+                }
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-getActivity",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "getHistory": {
+        "handler": "handlers/getTxHistoryHandler.getTxHistory",
+        "events": [
+          {
+            "http": {
+              "path": "getHistory/{email}",
+              "method": "get",
+              "request": {
+                "parameters": {
+                  "method.request.path.email": true
+                }
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-getHistory",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "getContracts": {
+        "handler": "handlers/getContractsHandler.getContracts",
+        "events": [
+          {
+            "http": {
+              "path": "getContracts/{email}",
+              "method": "get",
+              "request": {
+                "parameters": {
+                  "method.request.path.email": true
+                }
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-getContracts",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "uploadContract": {
+        "handler": "handlers/uploadContractHandler.uploadContract",
+        "events": [
+          {
+            "http": {
+              "path": "uploadContract",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-uploadContract",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "editContract": {
+        "handler": "handlers/editContractHandler.editContract",
+        "events": [
+          {
+            "http": {
+              "path": "editContract",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-editContract",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "deleteContract": {
+        "handler": "handlers/deleteContractHandler.deleteContract",
+        "events": [
+          {
+            "http": {
+              "path": "deleteContract",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-deleteContract",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "logout": {
+        "handler": "handlers/logoutUserHandler.logoutUser",
+        "events": [
+          {
+            "http": {
+              "path": "logout",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-logout",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "healthcheck": {
+        "handler": "handlers/healthCheckHandler.statusCheck",
+        "events": [
+          {
+            "http": {
+              "path": "status/ping",
+              "method": "get",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-healthcheck",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "dbHealth": {
+        "handler": "handlers/healthCheckHandler.dbHealth",
+        "events": [
+          {
+            "http": {
+              "path": "status/database",
+              "method": "get",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "kontrakt-api-dev-dbHealth",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      }
+    },
+    "resources": {
+      "Resources": {
+        "pathmapping": {
+          "Type": "AWS::ApiGateway::BasePathMapping",
+          "Properties": {
+            "BasePath": "api",
+            "DomainName": "api.kontrakt.co",
+            "RestApiId": {
+              "Ref": "ApiGatewayRestApi"
+            },
+            "Stage": "dev"
+          }
+        }
+      },
+      "Conditions": {
+        "IsOther": {
+          "Fn::Not": [
+            {
+              "Fn::Equals": [
+                "dev",
+                "test"
+              ]
+            }
+          ]
+        },
+        "IsTest": {
+          "Fn::Equals": [
+            "dev",
+            "test"
+          ]
+        }
+      },
+      "Outputs": {}
+    },
+    "serviceFilename": "serverless.yml",
+    "layers": {},
+    "artifact": "C:\\Workplace\\Misc\\kontrakt\\kontrakt-api\\.serverless\\kontrakt-api.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/kontrakt-api/dev/1568220093789-2019-09-11T16:41:33.789Z",
+    "artifact": "kontrakt-api.zip"
+  }
+}
